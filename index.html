@@ -1,0 +1,344 @@
+<html>
+    <head>
+        <title>Loom</title>
+
+        <style>
+            .over {
+                background: repeating-linear-gradient(90deg, 
+                rgba(255,255,255,0) 33%,
+                rgba(255,0,0,1) 33%,
+                rgba(255,0,0,1) 66%,
+                rgba(255,255,255,0) 66%, 
+                rgba(255,255,255,0) 100%),
+                repeating-linear-gradient(
+                    rgba(255,255,255,0.5) 33%,
+                    aqua 33%, 
+                    aqua 66%, 
+                    rgba(255,255,255,0.5) 66%, 
+                    rgba(255,255,255,0.5) 100%);
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+            }
+
+            .under {
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+                background: repeating-linear-gradient(
+                    rgba(255,255,255, 0) 33%,
+                    rgba(0,255,255,1) 33%, 
+                    rgba(0,255,255,1) 66%, 
+                    rgba(255,255,255, 0) 66%, 
+                    rgba(255,255,255, 0) 100%),
+                repeating-linear-gradient(90deg, 
+                rgba(255,255,255,0.5) 33%,
+                rgba(255,0,0,1) 33%,
+                rgba(255,0,0,1) 66%,
+                rgba(255,255,255,0.5) 66%, 
+                rgba(255,255,255,0.5) 100%);
+                /* border-top: 1px #000 solid;
+                border-bottom: 1px #000 solid; */
+            }
+        </style>
+
+
+    </head>
+    <body>
+        <form>
+            Please select the weave you want.
+            <div>
+                <div>
+                    <input type="radio" id="weave1" name="weaves" value="plainweave" checked>
+                    <label for="weave1">Plain weave</label>
+
+                    <input type="radio" id="weave2" name="weaves" value="basketweave">
+                    <label for="weave2">Basket Weave</label>
+                    <input type="number" id="basketweave_input" value="2" min="2" max="5">
+
+                    <input type="radio" id="weave3" name="weaves" value="twill">
+                    <label for="weave3">Twill</label>
+                    <input type="number" id="twill_input" value="2" min="2" max="5">
+
+                    <input type="radio" id="weave4" name="weaves" value="sateen">
+                    <label for="weave4">Sateen</label>
+                    <input type="number" id="sateen_input" value="5" min="3" max="5">
+                </div>
+                <button type="submit" value="Submit" id="submit">Submit</button>
+            </div>
+        </form>
+
+        <div id="loom-container">
+            <div id="loom-div">
+
+            </div>
+        </div>
+    </body>
+
+    <script>
+//         let loom = [
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0],
+//         [0,0,0,0,0,0,0,0,0]
+// ];
+
+
+function createLoom() {
+    let emptyloom = [];
+    for (let i = 0; i < 11; i++) {
+        emptyloom.push([0,0,0,0,0,0,0,0,0]);
+    }
+    console.log("emptyloom", emptyloom);
+    return emptyloom;
+}
+
+// plain weave
+let makePlainweave = function() {
+    let newloom = createLoom();
+    for (let i = 0; i < newloom.length; i++) {
+    if (i % 2 == 0) {
+        for (let j = 0; j < newloom[i].length; j++) {
+        if (j % 2 == 0) {
+            newloom[i][j] = 1
+        } 
+        }
+    } else {
+        for (let j = 0; j < newloom[i].length; j++) {
+        if (j % 2 != 0) {
+            newloom[i][j] = 1
+        } 
+        }
+    } 
+    }
+    return newloom;
+}
+
+let makeBasketweave = function(thickness) {
+    let newloom = createLoom();
+    const THICKNESS = thickness;
+    let numberOfLines = newloom.length;
+    let currentWeft = 0;
+    while (numberOfLines > 0 ) {
+    let number = 1;
+    let innerCounter = 0;
+
+    while(innerCounter < THICKNESS) {
+        if (numberOfLines <= 0) {
+        break;
+        }
+
+        let secondCounter = 0;
+
+        for (let currentWarp = 0; currentWarp < newloom[currentWeft].length; currentWarp++) {
+        if(secondCounter < THICKNESS) {
+            newloom[currentWeft][currentWarp] = 1;
+            secondCounter++;
+        } else  {
+            newloom[currentWeft][currentWarp] = 0;
+            secondCounter++;
+            if(secondCounter > THICKNESS * 2 - 1) {
+                newloom[currentWeft][currentWarp] = 0;
+            secondCounter = 0;
+            }
+        }
+        }
+
+        currentWeft++;
+        innerCounter++;
+        numberOfLines--;
+        }
+
+    number = THICKNESS;
+    innerCounter = 0;
+
+    while(innerCounter < THICKNESS) {
+        if (numberOfLines <= 0) {
+        break;
+        }
+        let secondCounter = 0;
+        for (let currentWarp = 0; currentWarp < newloom[currentWeft].length; currentWarp++) {
+        if(secondCounter < THICKNESS) {
+            // newloom[currentWeft][currentWarp] = '|';
+            secondCounter++;
+        } else {
+            newloom[currentWeft][currentWarp] = 1;
+            secondCounter++;
+            if(secondCounter > THICKNESS * 2 - 1) {
+                newloom[currentWeft][currentWarp] = 1;
+            secondCounter = 0;
+            }
+        }
+        }
+
+        innerCounter++;
+        currentWeft++;
+        numberOfLines--;
+    }
+    }
+    console.log(newloom);
+    return newloom;
+}
+
+// this makes a twill that in this / direction
+// not in the mood to make a twill that goes in this \ direction
+let makeTwill = function(repeat) {
+    let newloom = createLoom();
+    // lineMarker handles the offset of the repeat pattern necessary for the twill
+    lineMarker = 0;
+    for (let row = 0; row < newloom.length; row++) {
+        // repeatCounter handles how many dashes versus line will appear sequentally on a line
+        // lineMarker handles at which point in the dash/line sequence the line will begin
+        repeatCounter = lineMarker;
+        for (let thread = 0; thread < newloom[row].length; thread++) {
+            if (repeatCounter < repeat) {
+                newloom[row][thread] = 1;
+            }
+            if (repeatCounter >= repeat) {
+                // this is the 'l' condition
+                // doesn't do anything currently but it's good to have it marked anyway
+            }
+            repeatCounter++;
+            // this makes sure you always have e.g. --||--, ---|||---, instead of --||||| or some other malformed sequence
+            if (repeatCounter >= repeat * 2) {
+                repeatCounter = 0;
+            }
+            
+        }
+        // END OF LINE
+        lineMarker++;
+        if (lineMarker >= repeat * 2) {
+            lineMarker = 0;
+        }
+        
+    }
+    console.log(newloom);
+    return newloom;
+}
+
+// sateen is X threads over, one thread under
+// the argument for sateen() is how many threads over, aka the part that catches the light
+// sateen is similar to twill in that there is a displacement of the threads, resulting in a diagonal appearance
+let makeSateen = function(partThatWillShow) {
+    // TODO - must be at least 3 partThatWillShow. 2 or below won't work
+    let newloom = createLoom();
+    lineMarker = 0
+    for (let row = 0; row < newloom.length; row++) {
+        // repeatCounter handles how many dashes versus line will appear sequentally on a line
+        // lineMarker handles at which point in the dash/line sequence the line will begin
+        repeatCounter = lineMarker;
+        for (let thread = 0; thread < newloom[row].length; thread++) {
+            if (repeatCounter < partThatWillShow) {
+                newloom[row][thread] = 1;
+            }
+            if (repeatCounter == partThatWillShow) {
+                // this is the 'l' condition
+                // doesn't do anything currently but it's good to have it marked anyway
+            }
+            repeatCounter++;
+            // this makes sure you always have e.g. --||--, ---|||---, instead of --||||| or some other malformed sequence
+            if (repeatCounter > partThatWillShow) {
+                repeatCounter = 0;
+            }
+            
+        }
+        // END OF LINE
+
+        lineMarker++;
+        if (lineMarker >= partThatWillShow + 1) {
+            lineMarker = 0;
+        }
+        
+    }
+    // console.log(newloom)
+    return newloom;
+} 
+
+function generateLoom(loomFunction, loomInput = "none") {    
+    let loomToMake;
+    if (loomInput === "none") {
+        loomtoMake = loomFunction();
+    }
+    else {
+        loomtoMake = loomFunction(loomInput);
+    }
+
+    // remove old loom-div to refresh with a new one
+
+    var el = document.getElementById("loom-div");
+    el.remove();
+
+    var container = document.getElementById("loom-container");  
+
+    var element = document.createElement("div");
+    element.id = "loom-div";
+    
+
+    container.appendChild(element);
+
+    for(i = 0; i < loomtoMake.length; i++) {
+        var divRow = document.createElement("div");
+        divRow.className = "row";
+        element.appendChild(divRow);
+        for(j=0; j < loomtoMake[i].length; j++) {
+            if (loomtoMake[i][j] === 0) {
+            var span = document.createElement("div");
+            span.className = "over"
+            divRow.appendChild(span);
+            }
+            else if (loomtoMake[i][j] === 1) {
+            var span = document.createElement("div");
+            span.className = "under"
+            divRow.appendChild(span);
+            }
+            
+        }
+    }
+}
+
+let form = document.querySelector("form");
+
+form.addEventListener("submit", function(event) {
+        try {
+        var data = new FormData(form);
+        var output = "";
+        let input;
+        console.log(data);
+        for (const entry of data) {
+            output = entry[1];
+            switch (output) {
+                case "plainweave":
+                    generateLoom(makePlainweave);
+                    break;
+                case "basketweave":
+                    input = document.getElementById("basketweave_input").value;
+                    generateLoom(makeBasketweave, input);
+                    break;
+                case "twill":
+                    input = document.getElementById("twill_input").value;
+                    generateLoom(makeTwill, input);
+                    break;
+                case "sateen":
+                    input = document.getElementById("sateen_input").value;
+                    generateLoom(makeSateen, input);
+                    break;
+            }
+        }
+        console.log(output);
+        event.preventDefault();
+    }
+    catch(e) {
+        console.log(e);
+        event.preventDefault();
+    }
+}, false);
+
+    </script>
+</html>
